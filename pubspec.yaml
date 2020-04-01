@@ -1,0 +1,94 @@
+name: focus_app
+description: A new Flutter project.
+
+# The following defines the version and build number for your application.
+# A version number is three numbers separated by dots, like 1.2.43
+# followed by an optional build number separated by a +.
+# Both the version and the builder number may be overridden in flutter
+# build by specifying --build-name and --build-number, respectively.
+# In Android, build-name is used as versionName while build-number used as versionCode.
+# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
+# In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
+# Read more about iOS versioning at
+# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.1.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  sleek_circular_slider: ^1.1.0
+  flutter_svg: ^0.17.3+1
+
+  # firebase_messaging: ^6.0.13
+  # firebase_auth: ^0.15.5+3
+  # firebase_core: ^0.4.4+3
+  # cloud_firestore: ^0.13.4+2
+
+  # The following adds the Cupertino Icons font to your application.
+  # Use with the CupertinoIcons class for iOS style icons.
+  cupertino_icons: ^0.1.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
+
+# The following section is specific to Flutter.
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/cloud_1.svg
+    - assets/cloud_2.svg
+
+  fonts:
+    - family: Montserrat
+      fonts:
+        - asset: fonts/Montserrat-Light.ttf
+        - weight: 300
+        - asset: fonts/Montserrat-Regular.ttf
+        - weight: 400
+
+        - asset: fonts/Montserrat-LightItalic.ttf
+        - asset: fonts/Montserrat-ExtraLightItalic.ttf
+        - weight: 300
+        - style: italic
+
+        - asset: fonts/Montserrat-ExtraBold.ttf
+        - asset: fonts/Montserrat-Bold.ttf
+        - weight: 700
+
+        - asset: fonts/Montserrat-BoldItalic.ttf
+        - asset: fonts/Montserrat-ExtraBoldItalic.ttf
+        - weight: 700
+        - style: italic
+
+        - asset: fonts/Montserrat-SemiBold.ttf
+        - weight: 600
+        - asset: fonts/Montserrat-SemiBoldItalic.ttf
+        - weight: 600
+        - style: italic
+
+        - asset: fonts/Montserrat-Thin.ttf
+        - weight: 100
+        - asset: fonts/Montserrat-ThinItalic.ttf
+        - weight: 100
+        - style: italic
+
+        - asset: fonts/Montserrat-Medium.ttf
+        - weight: 500
+        - asset: fonts/Montserrat-MediumItalic.ttf
+        - weight: 500
+        - style: italic
+
+        - asset: fonts/Montserrat-Black.ttf
+        - weight: 900
+
+        - asset: fonts/Montserrat-BlackItalic.ttf
+        - weight: 900
+        - style: italic
