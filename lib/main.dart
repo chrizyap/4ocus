@@ -279,9 +279,11 @@ class _MainPageState extends State<MainPage>
                           startAngle: 270,
                         ),
                         onChange: (v) {
-                          time = (v * 1.21).floor();
-                          controller.duration = Duration(seconds: time);
-                          controller.value = 1;
+                          if (!timerIsRunning) {
+                            time = (v * 1.21).floor();
+                            controller.duration = Duration(seconds: time);
+                            controller.value = 1;
+                          } else {}
                         },
                         innerWidget: (v) {
                           return Center(
