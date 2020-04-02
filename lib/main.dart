@@ -8,6 +8,7 @@ final primaryColor = const Color(0xFF2E279D);
 final secondaryColor = const Color(0xFF46B3E6);
 final txtColor = const Color(0xFFDFF6F0);
 bool timerIsRunning = false;
+bool hastimerEnded = false;
 AnimationController controller;
 
 class App extends StatelessWidget {
@@ -38,6 +39,7 @@ class _MainPageState extends State<MainPage>
     with TickerProviderStateMixin, WidgetsBindingObserver {
   int time = 0;
   int points = 0;
+  int i = 0;
 
   String get timerString {
     Duration duration = controller.duration * controller.value;
@@ -89,14 +91,18 @@ class _MainPageState extends State<MainPage>
     });
 
     controller.reverse(from: controller.value == 0.0 ? 1.0 : controller.value);
+
+    controller.reverse(from: controller.value == 0.0 ? 1.0 : controller.value);
     controller.addListener(() {
-      print(controller.status);
       if (controller.isDismissed) {
         setState(() {
           timerIsRunning = false;
-          points += 10;
+          hastimerEnded = true;
         });
       }
+
+      print(controller.status);
+      print(controller.isAnimating);
     });
   }
 
@@ -145,6 +151,14 @@ class _MainPageState extends State<MainPage>
     );
   }
 
+  void addPoints() {
+    if (hastimerEnded == true) {
+      points += 10;
+      print('points added');
+      hastimerEnded = false;
+    }
+  }
+
   Widget _setButton() {
     if (!timerIsRunning) {
       timerIsRunning = false;
@@ -169,7 +183,7 @@ class _MainPageState extends State<MainPage>
             style: TextStyle(color: txtColor, fontSize: 30),
           ),
           width: MediaQuery.of(context).size.width * 0.5,
-          height: MediaQuery.of(context).size.width * 0.2,
+          height: MediaQuery.of(context).size.width * 0.18,
         ),
       );
     } else {
@@ -194,7 +208,7 @@ class _MainPageState extends State<MainPage>
             style: TextStyle(color: txtColor, fontSize: 30),
           ),
           width: MediaQuery.of(context).size.width * 0.5,
-          height: MediaQuery.of(context).size.width * 0.2,
+          height: MediaQuery.of(context).size.width * 0.18,
         ),
       );
     }
@@ -202,6 +216,8 @@ class _MainPageState extends State<MainPage>
 
   @override
   Widget build(BuildContext context) {
+    addPoints();
+
     return Scaffold(
         appBar: _getCustomAppBar(),
         body: Center(
@@ -251,7 +267,7 @@ class _MainPageState extends State<MainPage>
                       SleekCircularSlider(
                         initialValue: 25,
                         appearance: CircularSliderAppearance(
-                          size: 275,
+                          size: MediaQuery.of(context).size.width * 0.7,
                           customColors: CustomSliderColors(
                             hideShadow: true,
                             progressBarColors: [secondaryColor, primaryColor],
