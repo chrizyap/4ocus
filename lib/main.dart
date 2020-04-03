@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 void main() => runApp(App());
 
@@ -50,6 +51,18 @@ class _MainPageState extends State<MainPage>
   @override
   void initState() {
     super.initState();
+    var flutterNotificationsPlugin = new FlutterLocalNotificationsPlugin();
+    var android = new AndroidInitializationSettings('@mipmap/ic_launcher');
+    var iOS = new IOSInitializationSettings(
+        requestSoundPermission: true,
+        requestBadgePermission: true,
+        requestAlertPermission: true,
+        
+        );
+
+    var initSettings = new InitializationSettings(android, iOS);
+    flutterNotificationsPlugin.initialize(initSettings,
+        onSelectNotification: selectNotification);
 
     controller = AnimationController(
       duration: Duration(minutes: time),
@@ -57,6 +70,19 @@ class _MainPageState extends State<MainPage>
     );
 
     WidgetsBinding.instance.addObserver(this);
+  }
+
+  Future selectNotification(String payload) async {
+    if (payload != null) {
+      debugPrint('notification payload: ' + payload);
+    }
+
+    showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+              title: Text('nigger'),
+              content: Text('$payload'),
+            ));
   }
 
   @override
@@ -72,6 +98,8 @@ class _MainPageState extends State<MainPage>
     switch (state) {
       case AppLifecycleState.paused:
         print('Pasued State');
+        showNotification();
+
         break;
       case AppLifecycleState.resumed:
         print('Resumed State');
@@ -100,9 +128,6 @@ class _MainPageState extends State<MainPage>
           hastimerEnded = true;
         });
       }
-
-      print(controller.status);
-      print(controller.isAnimating);
     });
   }
 
@@ -111,6 +136,22 @@ class _MainPageState extends State<MainPage>
     setState(() {
       timerIsRunning = false;
     });
+  }
+
+  void addPoints() {
+    if (hastimerEnded == true) {
+      points += 10;
+      hastimerEnded = false;
+    }
+  }
+
+  void showNotification() async {
+    var android = new AndroidNotificationDetails(
+        'channelId', 'channelName', 'channelDescription');
+    var iOS = new IOSNotificationDetails();
+    var platform = new NotificationDetails(android, iOS);
+    await FlutterLocalNotificationsPlugin()
+        .show(0, 'nigger', 'nigger get up', platform);
   }
 
   _getCustomAppBar() {
@@ -149,14 +190,6 @@ class _MainPageState extends State<MainPage>
         ),
       ),
     );
-  }
-
-  void addPoints() {
-    if (hastimerEnded == true) {
-      points += 10;
-      print('points added');
-      hastimerEnded = false;
-    }
   }
 
   Widget _setButton() {
@@ -217,7 +250,6 @@ class _MainPageState extends State<MainPage>
   @override
   Widget build(BuildContext context) {
     addPoints();
-
     return Scaffold(
         appBar: _getCustomAppBar(),
         body: Center(
