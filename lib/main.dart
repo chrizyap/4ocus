@@ -54,11 +54,10 @@ class _MainPageState extends State<MainPage>
     var flutterNotificationsPlugin = new FlutterLocalNotificationsPlugin();
     var android = new AndroidInitializationSettings('@mipmap/ic_launcher');
     var iOS = new IOSInitializationSettings(
-        requestSoundPermission: true,
-        requestBadgePermission: true,
-        requestAlertPermission: true,
-        
-        );
+      requestSoundPermission: true,
+      requestBadgePermission: true,
+      requestAlertPermission: true,
+    );
 
     var initSettings = new InitializationSettings(android, iOS);
     flutterNotificationsPlugin.initialize(initSettings,
@@ -131,11 +130,62 @@ class _MainPageState extends State<MainPage>
     });
   }
 
-  void _endTimer() {
-    controller.stop();
-    setState(() {
-      timerIsRunning = false;
-    });
+  // void _endTimer() {
+
+  //   AlertDialog(
+  //     title: Text("Your'e not done yet!"),
+  //     content: ,
+
+  //   )
+  //   controller.stop();
+  //   setState(() {
+  //     timerIsRunning = false;
+  //   });
+  // }
+
+  Future<void> _endTimer() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("You're not done yet"),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Are you sure you want'),
+                Text("You won't get any 4ocus points!"),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            FlatButton(
+              child: Text(
+                'No',
+                style: TextStyle(color: Colors.red),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            FlatButton(
+              child: Text(
+                'Yes',
+                style: TextStyle(color: Colors.green),
+              ),
+              onPressed: () {
+                setState(() {
+                  timerIsRunning = false;
+                  controller.stop();
+                });
+
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void addPoints() {
@@ -223,6 +273,7 @@ class _MainPageState extends State<MainPage>
       timerIsRunning = true;
       return FlatButton(
         onPressed: () {
+          // _endTimer();
           _endTimer();
         },
         child: Container(
