@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -10,6 +12,7 @@ final secondaryColor = const Color(0xFF46B3E6);
 final txtColor = const Color(0xFFDFF6F0);
 bool timerIsRunning = false;
 bool hastimerEnded = false;
+Timer timer;
 AnimationController controller;
 
 class App extends StatelessWidget {
@@ -44,7 +47,6 @@ class _MainPageState extends State<MainPage>
 
   String get timerString {
     Duration duration = controller.duration * controller.value;
-
     return '${duration.inMinutes}:${(duration.inSeconds % 60).toString().padLeft(2, '0')}';
   }
 
@@ -61,7 +63,7 @@ class _MainPageState extends State<MainPage>
 
     var initSettings = new InitializationSettings(android, iOS);
     flutterNotificationsPlugin.initialize(initSettings,
-        onSelectNotification: selectNotification);
+        onSelectNotification: null);
 
     controller = AnimationController(
       duration: Duration(minutes: time),
@@ -71,18 +73,18 @@ class _MainPageState extends State<MainPage>
     WidgetsBinding.instance.addObserver(this);
   }
 
-  Future selectNotification(String payload) async {
-    if (payload != null) {
-      debugPrint('notification payload: ' + payload);
-    }
+  // Future selectNotification(String payload) async {
+  //   if (payload != null) {
+  //     debugPrint('notification payload: ' + payload);
+  //   }
 
-    showDialog(
-        context: context,
-        builder: (_) => AlertDialog(
-              title: Text('nigger'),
-              content: Text('$payload'),
-            ));
-  }
+  //   showDialog(
+  //       context: context,
+  //       builder: (_) => AlertDialog(
+  //             title: Text("Your'e not done yet!"),
+  //             content: Text('$payload'),
+  //           ));
+  // }
 
   @override
   void dispose() {
@@ -98,10 +100,17 @@ class _MainPageState extends State<MainPage>
       case AppLifecycleState.paused:
         print('Pasued State');
         showNotification();
-
+        startBgTimer();
+        // Start the periodic timer which will end timer if user doesn't return to 4ocus after 10 seconds
+        timer = new Timer.periodic(new Duration(seconds: 10), (time) {
+          print('Timer Ending now');
+          _endTimer();
+          timer.cancel();
+        });
         break;
       case AppLifecycleState.resumed:
         print('Resumed State');
+        timer.cancel();
         break;
       case AppLifecycleState.inactive:
         print('Inactive State');
@@ -116,7 +125,6 @@ class _MainPageState extends State<MainPage>
     setState(() {
       timerIsRunning = true;
     });
-
     controller.reverse(from: controller.value == 0.0 ? 1.0 : controller.value);
 
     controller.reverse(from: controller.value == 0.0 ? 1.0 : controller.value);
@@ -130,20 +138,16 @@ class _MainPageState extends State<MainPage>
     });
   }
 
-  // void _endTimer() {
+  void startBgTimer() {}
 
-  //   AlertDialog(
-  //     title: Text("Your'e not done yet!"),
-  //     content: ,
+  void _endTimer() {
+    controller.stop();
+    setState(() {
+      timerIsRunning = false;
+    });
+  }
 
-  //   )
-  //   controller.stop();
-  //   setState(() {
-  //     timerIsRunning = false;
-  //   });
-  // }
-
-  Future<void> _endTimer() async {
+  Future<void> _showAlert() async {
     return showDialog<void>(
       context: context,
       barrierDismissible: false, // user must tap button!
@@ -174,10 +178,7 @@ class _MainPageState extends State<MainPage>
                 style: TextStyle(color: Colors.green),
               ),
               onPressed: () {
-                setState(() {
-                  timerIsRunning = false;
-                  controller.stop();
-                });
+                _endTimer();
 
                 Navigator.of(context).pop();
               },
@@ -200,8 +201,8 @@ class _MainPageState extends State<MainPage>
         'channelId', 'channelName', 'channelDescription');
     var iOS = new IOSNotificationDetails();
     var platform = new NotificationDetails(android, iOS);
-    await FlutterLocalNotificationsPlugin()
-        .show(0, 'nigger', 'nigger get up', platform);
+    await FlutterLocalNotificationsPlugin().show(0, 'Return to 4ocus',
+        'Hurry! Your timer will end in 10..9..8..', platform);
   }
 
   _getCustomAppBar() {
@@ -274,7 +275,7 @@ class _MainPageState extends State<MainPage>
       return FlatButton(
         onPressed: () {
           // _endTimer();
-          _endTimer();
+          _showAlert();
         },
         child: Container(
           alignment: Alignment.center,
