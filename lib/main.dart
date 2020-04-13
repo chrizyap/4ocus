@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'Animations/FadeAnimation.dart';
+
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 void main() => runApp(App());
@@ -45,7 +47,7 @@ class _MainPageState extends State<MainPage>
   int points = 0;
   int i = 0;
 
-  String get timerString {
+  static String get timerString {
     Duration duration = controller.duration * controller.value;
     return '${duration.inMinutes}:${(duration.inSeconds % 60).toString().padLeft(2, '0')}';
   }
@@ -72,19 +74,6 @@ class _MainPageState extends State<MainPage>
 
     WidgetsBinding.instance.addObserver(this);
   }
-
-  // Future selectNotification(String payload) async {
-  //   if (payload != null) {
-  //     debugPrint('notification payload: ' + payload);
-  //   }
-
-  //   showDialog(
-  //       context: context,
-  //       builder: (_) => AlertDialog(
-  //             title: Text("Your'e not done yet!"),
-  //             content: Text('$payload'),
-  //           ));
-  // }
 
   @override
   void dispose() {
@@ -144,6 +133,9 @@ class _MainPageState extends State<MainPage>
     controller.stop();
     setState(() {
       timerIsRunning = false;
+      controller.duration = Duration(seconds: 0);
+      time = 0;
+      print(controller.duration);
     });
   }
 
@@ -153,12 +145,12 @@ class _MainPageState extends State<MainPage>
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("You're not done yet"),
+          title: Text("You're not done yet!"),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Text('Are you sure you want'),
-                Text("You won't get any 4ocus points!"),
+                Text('Are you sure about this?'),
+                Text("You won't get any 4ocus points."),
               ],
             ),
           ),
@@ -166,7 +158,7 @@ class _MainPageState extends State<MainPage>
             FlatButton(
               child: Text(
                 'No',
-                style: TextStyle(color: Colors.red),
+                style: TextStyle(color: Colors.red, fontSize: 15),
               ),
               onPressed: () {
                 Navigator.of(context).pop();
@@ -175,7 +167,7 @@ class _MainPageState extends State<MainPage>
             FlatButton(
               child: Text(
                 'Yes',
-                style: TextStyle(color: Colors.green),
+                style: TextStyle(color: Colors.green, fontSize: 15),
               ),
               onPressed: () {
                 _endTimer();
@@ -250,6 +242,7 @@ class _MainPageState extends State<MainPage>
       return FlatButton(
         onPressed: () {
           _startTimer();
+          print(controller.value);
         },
         child: Container(
           alignment: Alignment.center,
@@ -315,114 +308,128 @@ class _MainPageState extends State<MainPage>
                     colors: [secondaryColor, primaryColor])),
             child: Stack(
               children: <Widget>[
-                Container(
-                  height: MediaQuery.of(context).size.height * 0.85,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Container(
-                            padding: EdgeInsets.only(bottom: 20),
-                            margin: EdgeInsets.only(left: 20),
-                            height: 75,
-                            width: 100,
-                            child: SvgPicture.asset(
-                              "assets/cloud_1.svg",
-                              color: Colors.white,
+                FadeAnimation(
+                  1.35,
+                  Container(
+                    height: MediaQuery.of(context).size.height * 0.85,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            FadeAnimation(
+                              1.35,
+                              Container(
+                                padding: EdgeInsets.only(bottom: 20),
+                                margin: EdgeInsets.only(left: 20),
+                                height: 75,
+                                width: 100,
+                                child: SvgPicture.asset(
+                                  "assets/cloud_1.svg",
+                                  color: Colors.white,
+                                ),
+                              ),
                             ),
-                          ),
-                          Container(
-                            padding: EdgeInsets.only(top: 20),
-                            margin: EdgeInsets.only(
-                              right: 20,
+                            FadeAnimation(
+                              1.35,
+                              Container(
+                                padding: EdgeInsets.only(top: 20),
+                                margin: EdgeInsets.only(
+                                  right: 20,
+                                ),
+                                height: 75,
+                                width: 100,
+                                child: SvgPicture.asset(
+                                  "assets/cloud_2.svg",
+                                  color: Colors.white,
+                                ),
+                              ),
                             ),
-                            height: 75,
-                            width: 100,
-                            child: SvgPicture.asset(
-                              "assets/cloud_2.svg",
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      SleekCircularSlider(
-                        initialValue: 25,
-                        appearance: CircularSliderAppearance(
-                          size: MediaQuery.of(context).size.width * 0.7,
-                          customColors: CustomSliderColors(
-                            hideShadow: true,
-                            progressBarColors: [secondaryColor, primaryColor],
-                            trackColor: secondaryColor,
-                          ),
-                          customWidths: CustomSliderWidths(
-                              trackWidth: 10, progressBarWidth: 17),
-                          angleRange: 360,
-                          startAngle: 270,
+                          ],
                         ),
-                        onChange: (v) {
-                          if (!timerIsRunning) {
-                            time = (v * 1.21).floor();
-                            controller.duration = Duration(seconds: time);
-                            controller.value = 1;
-                          } else {}
-                        },
-                        innerWidget: (v) {
-                          return Center(
-                            child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  AnimatedBuilder(
-                                    animation: controller,
-                                    builder:
-                                        (BuildContext context, Widget child) {
-                                      return Text(
-                                        '$timerString',
-                                        style: TextStyle(
-                                            fontSize: 50, color: txtColor),
-                                      );
-                                    },
-                                  ),
-                                  Text(
-                                    'Seconds',
-                                    style: TextStyle(
-                                        fontSize: 25, color: txtColor),
-                                  ),
-                                ]),
-                          );
-                        },
-                      ),
 
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Container(
-                            margin: EdgeInsets.symmetric(vertical: 10),
-                            child: Text(
-                              !timerIsRunning ? 'Set a time.' : 'You got this!',
-                              style: TextStyle(color: txtColor, fontSize: 30),
+                        SleekCircularSlider(
+                          initialValue: 25,
+                          appearance: CircularSliderAppearance(
+                            size: MediaQuery.of(context).size.width * 0.7,
+                            customColors: CustomSliderColors(
+                              hideShadow: true,
+                              progressBarColors: [secondaryColor, primaryColor],
+                              trackColor: secondaryColor,
                             ),
-                            // margin: EdgeInsets.only(bottom: 50),
+                            customWidths: CustomSliderWidths(
+                                trackWidth: 10, progressBarWidth: 17),
+                            angleRange: 360,
+                            startAngle: 270,
                           ),
-                        ],
-                      ),
+                          onChange: (v) {
+                            if (!timerIsRunning) {
+                              time = (v * 1.21).floor();
+                              controller.duration = Duration(seconds: time);
+                              controller.value = 1;
+                              print(time);
+                            } else {
+                              // Empty space disables the slider
+                            }
+                          },
+                          innerWidget: (v) {
+                            return Center(
+                              child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    AnimatedBuilder(
+                                      animation: controller,
+                                      builder:
+                                          (BuildContext context, Widget child) {
+                                        return Text(
+                                          '$timerString',
+                                          style: TextStyle(
+                                              fontSize: 50, color: txtColor),
+                                        );
+                                      },
+                                    ),
+                                    Text(
+                                      'Seconds',
+                                      style: TextStyle(
+                                          fontSize: 25, color: txtColor),
+                                    ),
+                                  ]),
+                            );
+                          },
+                        ),
 
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Container(
-                            // width: 200,
-                            // height: 100,
-                            // padding: EdgeInsets.only(bottom: 10),
-                            child: _setButton(),
-                            // margin: EdgeInsets.only(top: 50)7
-                          ),
-                        ],
-                      ),
-                      // SizedBox(height: 75),
-                    ],
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Container(
+                              margin: EdgeInsets.symmetric(vertical: 10),
+                              child: Text(
+                                !timerIsRunning
+                                    ? 'Set a time.'
+                                    : 'You got this!',
+                                style: TextStyle(color: txtColor, fontSize: 30),
+                              ),
+                              // margin: EdgeInsets.only(bottom: 50),
+                            ),
+                          ],
+                        ),
+
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Container(
+                              // width: 200,
+                              // height: 100,
+                              // padding: EdgeInsets.only(bottom: 10),
+                              child: _setButton(),
+                              // margin: EdgeInsets.only(top: 50)7
+                            ),
+                          ],
+                        ),
+                        // SizedBox(height: 75),
+                      ],
+                    ),
                   ),
                 )
               ],
