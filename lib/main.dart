@@ -182,7 +182,7 @@ class _MainPageState extends State<MainPage>
   }
 
   void addPoints() {
-    if (hastimerEnded == true) {
+    if (hastimerEnded) {
       points += 10;
       hastimerEnded = false;
     }
@@ -366,7 +366,7 @@ class _MainPageState extends State<MainPage>
                           onChange: (v) {
                             if (!timerIsRunning) {
                               time = (v * 1.21).floor();
-                              controller.duration = Duration(seconds: time);
+                              controller.duration = Duration(minutes: time);
                               controller.value = 1;
                               print(time);
                             } else {
@@ -390,7 +390,7 @@ class _MainPageState extends State<MainPage>
                                       },
                                     ),
                                     Text(
-                                      'Seconds',
+                                      'Minutes',
                                       style: TextStyle(
                                           fontSize: 25, color: txtColor),
                                     ),
